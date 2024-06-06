@@ -42,7 +42,7 @@ compute_gdh <- function(hourly_temps, previous_gdh, gdh_in_flow, Tb = 4.4) {
   return(gdh)
 }
 
-# Example main function to run the model
+# Main function to run the model
 run_model <- function(df, gdh_in_flow = 7850) {
   cu_requirement <- 1075
   gdh_threshold <- gdh_in_flow
@@ -70,7 +70,7 @@ run_model <- function(df, gdh_in_flow = 7850) {
   return(bloom_day)
 }
 
-# Example usage
+# Example usage with the specific weather data file
 # Load your weather data into a DataFrame
 df <- read.csv('data/Hourly_RockSprings2024.csv')
 # specify the date time format 
