@@ -6,9 +6,11 @@ library(lubridate)
 # Create a sample data frame
 dta <- data.frame(
   years = c(2024, 2023, 2022, 2021, 2020, 2019),
-  bloom_dates = as.Date(c('2024-04-28',	'2023-05-07',	'2022-05-08',	'2021-04-28',	'2020-05-19',	'2019-05-12'))
+  # predicted bloom dates for Rock Springs
+  bloom_dates = as.Date(c('2024-04-20',	'2023-04-16',	'2022-04-27',	'2021-04-28',	'2020-05-02',	'2019-04-27'))
 )
 
+# predicted bloom dates for Harborckreek
 #bloom_dates = as.Date(c('2024-04-28',	'2023-05-07',	'2022-05-08',	'2021-04-28',	'2020-05-19',	'2019-05-12'))
 
 
@@ -33,7 +35,7 @@ p2 <- ggplot(dta, aes(x = years, y = day_of_year, group = 1)) +
   geom_point(color = "red", size = 3) + # Change point color and size
   geom_label(aes(label = month_day), vjust = -0.5, hjust = 0.5, size = 3.5) + # Adjust text size
   labs(
-    title = "Change of Apple Bloom Dates Over Years at Harborcreek, PA",
+    title = "Change of Apple Bloom Dates Over Years at Rock Spring, PA",
     y = "Bloom date (Day of Year)"
   ) +
   ylim(100, 127) +
