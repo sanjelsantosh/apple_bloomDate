@@ -45,5 +45,5 @@ p2 <- ggplot(dta, aes(x = years, y = day_of_year, group = 1)) +
 print(p2)
 
 # combine the multiple plots
-library(ggpubr)
-ggarrange(p1, p2, nrow =2)
+# library(ggpubr)
+# ggarrange(p1, p2, nrow =2)
