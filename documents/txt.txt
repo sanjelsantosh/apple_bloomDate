@@ -1,0 +1,152 @@
+Table 2. Degree days for the start and end of each stage and the standard deviation for Cripps Pink, Gala and Red Delicious. 						
+
+Cultivar	Stage	State_start GDD	State_end_GDD	SD_StartGDD	SD_endGDD	
+Cripps_Pink	F	187.42	255.9	37.55	48.42	
+Cripps_Pink	G	216.72	326.19	48.02	52.49	
+Gala 	F	220.95	273.88	45.59	53.52	
+Gala 	G	243.19	328.51	50.22	70.9	
+Red_Delicious	F	207	266.5	43.53	54.78	
+Red_Delicious	G	234.47	332.74	46.67	76.68	
+						
+Stage code: F = First Bloom; G = Full Bloom; 						
+
+Use this above information to update the codes of my program below. Currently this programs only uses one threshold GDD. But I want to extract dates for First bloom start date, First Bloom end date, Full bloom start date and Full bloom end date. 
+What would a logical value to use as general thresholds?
+
+# Below my current code 
+# ---------------------
+# Load required packages
+library(dplyr)
+library(lubridate)
+
+# Function to calculate daily GDD
+calculate_gdd <- function(tmax, tmin, base_temp) {
+  gdd <- ((tmax + tmin) / 2) - base_temp
+  gdd[gdd < 0] <- 0
+  return(gdd)
+}
+
+library(readr)
+weather_data <- read_csv("data/Hourly_RockSprings2024.csv")
+
+# Convert date to datetime
+weather_data <- weather_data %>%
+  mutate(date = mdy_hms(date))
+
+# Calculate daily summaries
+daily_weather_data <- weather_data %>%
+  group_by(date = as_date(date)) %>%
+  summarise(
+    tmax = max(air_temp_c, na.rm = TRUE),
+    tmin = min(air_temp_c, na.rm = TRUE))
+
+# calcualte cumulative GDD  
+daily_weather_data <- daily_weather_data %>%
+  mutate(gdd = calculate_gdd(tmax, tmin, base_temp)) |> 
+  mutate(accumulated_gdd = cumsum(gdd))
+
+
+# Set parameters
+start_date <- as.Date("2022-01-01")  # Start date for GDD accumulation
+gdd_threshold <- # update this based on table above
+base_temp <- 43  # Base temperature = 6.11°C or 43°F
+
+# Extract bloom date
+bloom_date <- daily_weather_data %>%
+  filter(accumulated_gdd >= gdd_threshold) %>%
+  slice(1) %>%
+  pull(date)
+
+print(bloom_date)
+
+
+-----------------------------
+Make a data frame with this list 'pedicted_bloom_dates'
+columns I need are 1) variety 2)Type of bloom, first bloom or Full bloom and  3) start date and 4) End date
+
+
+> predicted_bloom_dates
+$`First Bloom_Cripps Pink`
+$`First Bloom_Cripps Pink`$start_date
+[1] "2024-04-29"
+
+$`First Bloom_Cripps Pink`$end_date
+[1] "2024-05-05"
+
+
+$`Full Bloom_Cripps Pink`
+$`Full Bloom_Cripps Pink`$start_date
+[1] "2024-05-01"
+
+$`Full Bloom_Cripps Pink`$end_date
+[1] "2024-05-14"
+
+
+$`First Bloom_Gala`
+$`First Bloom_Gala`$start_date
+[1] "2024-05-01"
+
+$`First Bloom_Gala`$end_date
+[1] "2024-05-07"
+
+
+$`Full Bloom_Gala`
+$`Full Bloom_Gala`$start_date
+[1] "2024-05-03"
+
+$`Full Bloom_Gala`$end_date
+[1] "2024-05-14"
+
+
+$`First Bloom_Red Delicious`
+$`First Bloom_Red Delicious`$start_date
+[1] "2024-04-30"
+
+$`First Bloom_Red Delicious`$end_date
+[1] "2024-05-06"
+
+
+$`Full Bloom_Red Delicious`
+$`Full Bloom_Red Delicious`$start_date
+[1] "2024-05-02"
+
+$`Full Bloom_Red Delicious`$end_date
+[1] "2024-05-14"
+
+
+> typeof(predicted_bloom_dates)
+[1] "list"
+> class(predicted_bloom_dates)
+[1] "list"
+
+
+#####===========================================================
+I need to make a ggplot graph in R with date variables. Below is my data
+>dta
+  years bloom_dates 
+  2024  2024-04-20     
+  2023  2023-04-16     
+  2022  2022-04-27     
+  2021  2021-04-28     
+  2020  2020-05-02    
+  2019  2019-04-27     
+
+I need to plot month-day in y axis and year in x-axis 
+I used the following code and got a graph 
+
+# Extract month and day from bloom_dates
+dta$month_day <- format(dta$bloom_dates, "%m-%d")
+# Plot the data
+ggplot(dta, aes(x = years, y = month_day, group = 1)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Change of Bloom Dates Over Years at Rock Springs, PA",
+    x = "Year",
+    y = "Bloom Date (Month-Day)"
+  ) +
+  scale_y_discrete(labels = function(x) format(as.Date(x, format="%m-%d"), "%b-%d"))
+
+The problem is since the "%b-%d" is recognized as characer, the y axis were not properly placed
+Help me redo the graph. Let's calculate the day of the year and use it as a continuous variable for y axis.
+
