@@ -1,3 +1,6 @@
+# add the link of this paper
+
+
 Table 2. Degree days for the start and end of each stage and the standard deviation for Cripps Pink, Gala and Red Delicious. 						
 
 Cultivar	Stage	State_start GDD	State_end_GDD	SD_StartGDD	SD_endGDD	
